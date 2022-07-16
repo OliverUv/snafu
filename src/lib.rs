@@ -1,6 +1,10 @@
 #![deny(missing_docs)]
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![cfg_attr(feature = "unstable-backtraces-impl-std", feature(backtrace))]
+#![cfg_attr(
+    feature = "unstable-provider-api",
+    feature(error_generic_member_access, provide_any)
+)]
 
 //! # SNAFU
 //!

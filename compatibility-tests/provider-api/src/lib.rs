@@ -57,3 +57,45 @@ fn constant_fields_can_use_expressions() {
 
     assert!(matches!(inner, Some(3)));
 }
+
+#[test]
+fn sources_are_automatically_provided() {
+    #[derive(Debug, Snafu)]
+    struct InnerError;
+
+    #[derive(Debug, Snafu)]
+    struct WithSourceError {
+        source: InnerError,
+    }
+
+    let e = WithSourceSnafu.into_error(InnerError);
+    let e = &e as &dyn snafu::Error;
+    let inner = e.request_ref::<InnerError>();
+
+    assert!(matches!(inner, Some(InnerError)));
+}
+
+#[test]
+fn backtraces_are_automatically_provided() {
+    #[derive(Debug, Snafu)]
+    struct WithBacktraceError {
+        backtrace: Backtrace,
+    }
+
+    let e = WithBacktraceSnafu.build();
+    let e = &e as &dyn snafu::Error;
+    let bt = e.request_ref::<Backtrace>();
+
+    assert!(bt.is_some());
+}
+
+// opaque error passes along?
+// enum and struct?
+// test for duplicated provider
+// disable a default provider
+// chain to source error
+// specify if field is before / after source chained
+// override if provided field is reference or value
+// override provided field type (e.g. &String -> &str)
+// implicit fields
+// Option<Backtrace> (maybe a transformer that can handle `&string` -> `&str` too?)
